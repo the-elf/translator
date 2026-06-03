@@ -2,26 +2,34 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"os"
 	"time"
 	"translator/internal/handler"
+	"translator/internal/util"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"github.com/lmittmann/tint"
 )
 
 const databaseURLKey = "DATABASE_URL"
 
 func main() {
+	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: slog.LevelDebug})))
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Println(".env not found, using environment")
+		slog.Info(".env not found, using environment")
 	}
 
-	pool, err := pgxpool.New(context.Background(), os.Getenv(databaseURLKey))
+	databaseURL, err := util.RequireEnv(databaseURLKey)
 	if err != nil {
-		panic(err)
+		fatal(err.Error())
+	}
+	pool, err := pgxpool.New(context.Background(), databaseURL)
+	if err != nil {
+		fatal("failed to connect to database", "err", err)
 	}
 	defer pool.Close()
 
@@ -29,13 +37,18 @@ func main() {
 	defer cancel()
 	err = pool.Ping(timeout)
 	if err != nil {
-		panic(err)
+		fatal("failed to connect to database", "err", err)
 	}
 
 	th, err := handler.NewTelegramHandler(pool)
 	if err != nil {
-		panic(err)
+		fatal("failed to create telegram handler", "err", err)
 	}
 
 	th.Start()
+}
+
+func fatal(msg string, args ...any) {
+	slog.Error(msg, args...)
+	os.Exit(1)
 }

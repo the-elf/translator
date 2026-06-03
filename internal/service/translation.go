@@ -12,7 +12,7 @@ type TranslationService struct {
 func NewTranslationService() (*TranslationService, error) {
 	openAiService, err := NewOpenAiService()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create translation service: %v", err)
 	}
 
 	return &TranslationService{openAiService: openAiService}, nil

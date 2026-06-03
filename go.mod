@@ -3,7 +3,9 @@ module translator
 go 1.26
 
 require (
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/joho/godotenv v1.5.1
+	github.com/lmittmann/tint v1.1.3
 	github.com/openai/openai-go v1.12.0
 	gopkg.in/telebot.v3 v3.3.8
 )
@@ -11,7 +13,6 @@ require (
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.9.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect

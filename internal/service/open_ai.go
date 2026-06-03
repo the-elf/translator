@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 	"translator/internal/model"
+	"translator/internal/util"
 
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/packages/param"
@@ -21,8 +21,9 @@ const (
 )
 
 func NewOpenAiService() (*OpenAiService, error) {
-	if _, ok := os.LookupEnv(openAiApiKeyKey); !ok {
-		return nil, fmt.Errorf("missing %s", openAiApiKeyKey)
+	_, err := util.RequireEnv(openAiApiKeyKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create openai service: %v", err)
 	}
 	return &OpenAiService{client: openai.NewClient()}, nil
 }
