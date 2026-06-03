@@ -20,40 +20,23 @@ const (
 	gptModelVersion = "gpt-5.4-nano"
 )
 
-func NewOpenAiService() *OpenAiService {
-	_, ok := os.LookupEnv(openAiApiKeyKey)
-	if !ok {
-		panic(fmt.Sprintf("Missing %s", openAiApiKeyKey))
+func NewOpenAiService() (*OpenAiService, error) {
+	if _, ok := os.LookupEnv(openAiApiKeyKey); !ok {
+		return nil, fmt.Errorf("missing %s", openAiApiKeyKey)
 	}
-	return &OpenAiService{client: openai.NewClient()}
+	return &OpenAiService{client: openai.NewClient()}, nil
 }
 
-var translationPrompts = map[model.Language]string{
-	model.EnglishLanguage: "Translate the text into English without adding anything extra. Return only the translation of the provided text and nothing else.",
-	model.RussianLanguage: "Переведи текст на русский язык, без отсебятины. В ответ верни только перевод предоставленного текста и ничего больше.",
-}
-
-func (o *OpenAiService) translationMessage(text string, lang model.Language) (*openai.ChatCompletion, error) {
-	prompt := translationPrompts[lang]
-	if prompt == "" {
-		return nil, fmt.Errorf("no translation prompt found for '%s' language", lang)
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+func (o *OpenAiService) translationMessage(text string, template model.MessageTemplate) (*openai.ChatCompletion, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	completion, err := o.client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+	return o.client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 		Model:       gptModelVersion,
 		Temperature: param.NewOpt(0.0),
 		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.SystemMessage(prompt),
+			openai.SystemMessage(template.Text),
 			openai.UserMessage(text),
 		},
 	})
-	// todo обработать случай context deadline exceeded, чтобы не висело соообщение "Перевожу..."
-	if err != nil {
-		return nil, err
-	}
-
-	return completion, nil
 }

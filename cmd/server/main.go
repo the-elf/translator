@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"log"
+	"os"
+	"time"
 	"translator/internal/handler"
-	"translator/internal/repository"
-	"translator/internal/service"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
+
+const databaseURLKey = "DATABASE_URL"
 
 func main() {
 	err := godotenv.Load()
@@ -15,9 +19,20 @@ func main() {
 		log.Println(".env not found, using environment")
 	}
 
-	cr := repository.NewClientRepositoryMemory()
-	ts := service.NewTelegramService(cr)
-	th, err := handler.NewTelegramHandler(ts)
+	pool, err := pgxpool.New(context.Background(), os.Getenv(databaseURLKey))
+	if err != nil {
+		panic(err)
+	}
+	defer pool.Close()
+
+	timeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = pool.Ping(timeout)
+	if err != nil {
+		panic(err)
+	}
+
+	th, err := handler.NewTelegramHandler(pool)
 	if err != nil {
 		panic(err)
 	}
