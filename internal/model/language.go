@@ -6,7 +6,11 @@ import (
 
 type Language struct {
 	ID   int64
-	Code string
+	Code LanguageCode
+}
+
+func EmptyLang() Language {
+	return Language{}
 }
 
 type LanguageCode string

@@ -11,7 +11,7 @@ type MessageTemplateService struct {
 	repo repository.MessageTemplateRepository
 }
 
-func NewMessageTemplate(db *pgxpool.Pool) *MessageTemplateService {
+func NewMessageTemplateService(db *pgxpool.Pool) *MessageTemplateService {
 	return &MessageTemplateService{repo: repository.NewMessageTemplateRepository(db)}
 }
 

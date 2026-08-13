@@ -7,6 +7,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lmittmann/tint v1.1.3
 	github.com/openai/openai-go v1.12.0
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	gopkg.in/telebot.v3 v3.3.8
 )
 

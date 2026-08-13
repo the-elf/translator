@@ -21,7 +21,7 @@ func (m *messageTemplateRepository) GetByCodeAndLang(code model.MessageTemplateC
 	query := `select id, language_id, code, text from message_template where code = $1 and language_id = $2`
 
 	var template model.MessageTemplate
-	err := m.db.QueryRow(context.Background(), query, code, lang.ID).Scan(&template.ID, &template.LanguageId, &template.Code, &template.Text)
+	err := m.db.QueryRow(context.Background(), query, code, lang.ID).Scan(&template.ID, &template.LanguageID, &template.Code, &template.Text)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return template, model.ErrMessageTemplateNotFound
 	}

@@ -4,8 +4,8 @@ import "errors"
 
 type MessageTemplate struct {
 	ID         int64
-	LanguageId int64
-	Code       string
+	LanguageID int64
+	Code       MessageTemplateCode
 	Text       string
 }
 
@@ -23,4 +23,7 @@ const (
 	UnsupportedLanguageMsg    MessageTemplateCode = "UNSUPPORTED_LANGUAGE_MSG"
 	PreferredLanguageMsg      MessageTemplateCode = "PREFERRED_LANGUAGE_MSG"
 	TranslationErrorMsg       MessageTemplateCode = "TRANSLATION_ERROR_MSG"
+	UnexpectedErrMsg          MessageTemplateCode = "UNEXPECTED_ERR_MSG"
+	NotGeorgianTextErrorMsg   MessageTemplateCode = "NOT_GEORGIAN_TEXT_ERROR_MSG"
+	GeorgianTranslitMsg       MessageTemplateCode = "GEORGIAN_TRANSLIT_MSG"
 )

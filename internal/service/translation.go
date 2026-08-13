@@ -1,8 +1,11 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"translator/internal/model"
+	"translator/internal/util"
 )
 
 type TranslationService struct {
@@ -18,7 +21,7 @@ func NewTranslationService() (*TranslationService, error) {
 	return &TranslationService{openAiService: openAiService}, nil
 }
 
-var ErrOpenAiEmptyResponse = fmt.Errorf("openai returned no choices")
+var ErrNotGeorgianText = errors.New("not a georgian text")
 
 func (t *TranslationService) Translate(text string, template model.MessageTemplate) (string, error) {
 	completion, err := t.openAiService.translationMessage(text, template)
@@ -26,8 +29,21 @@ func (t *TranslationService) Translate(text string, template model.MessageTempla
 		return "", err
 	}
 	if len(completion.Choices) == 0 {
-		return "", ErrOpenAiEmptyResponse
+		return "", errors.New("openai returned no choices")
 	}
 
-	return completion.Choices[0].Message.Content, nil
+	translation := completion.Choices[0].Message.Content
+	return t.resolveTranslation(text, template, translation)
+}
+
+func (t *TranslationService) resolveTranslation(text string, template model.MessageTemplate, translation string) (string, error) {
+	if translation == "NOT_GEORGIAN_TEXT" {
+		return "", ErrNotGeorgianText
+	}
+	if translation == "GEORGIAN_TRANSLITERATION" {
+		return t.Translate(util.ToGeorgian(text), template)
+	}
+
+	translation = strings.ReplaceAll(translation, "—", "-")
+	return translation, nil
 }

@@ -16,7 +16,12 @@ func NewButtonRepository(db *pgxpool.Pool) ButtonRepository {
 }
 
 func (b *buttonRepository) GetGroupByNameAndLang(name model.ButtonGroupName, lang model.Language) ([]model.Button, error) {
-	query := `select id, language_id, group_name, data, title from button where group_name = $1 and language_id = $2`
+	query := `
+		select id, language_id, group_name, data, title 
+		from button 
+		where group_name = $1 and language_id = $2
+		order by sort_order
+	`
 
 	rows, err := b.db.Query(context.Background(), query, name, lang.ID)
 	if err != nil {
