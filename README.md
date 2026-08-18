@@ -42,12 +42,15 @@ deployment.
 
 ## Running it
 
-Requires Go 1.26+, Docker (for Postgres), and an OpenAI API key.
+Requires Go 1.26+, Docker (for Postgres), the [golang-migrate](https://github.com/golang-migrate/migrate)
+CLI, and an OpenAI API key.
 
 ```bash
+brew install golang-migrate   # or: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
 cp .env.example .env   # fill in TELEGRAM_BOT_TOKEN, OPENAI_API_KEY, DATABASE_URL, etc.
 docker-compose up -d   # starts Postgres
-make migrate-up        # runs migrations (requires golang-migrate CLI)
+make migrate-up        # runs migrations
 go run ./cmd/server
 ```
 
