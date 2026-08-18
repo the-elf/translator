@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"translator/internal/model"
-	"translator/internal/util"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -33,11 +32,10 @@ func (u *userRepository) Get(chatID int64) (model.User, error) {
 		&user.Language.Code,
 	)
 
-	return user, util.Ternary(
-		errors.Is(err, pgx.ErrNoRows),
-		model.ErrUserNotFound,
-		err,
-	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return user, model.ErrUserNotFound
+	}
+	return user, err
 }
 
 func (u *userRepository) Save(user model.User) error {

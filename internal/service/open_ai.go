@@ -25,14 +25,14 @@ const (
 )
 
 func NewOpenAiService() (*OpenAiService, error) {
-	envs, errs := util.RequireEnvs(openAiApiKeyKey, gptModelVersionKey, translationTimeoutKey)
-	if errs != nil {
-		return nil, fmt.Errorf("failed to create openai service: %v", errs)
+	envs, err := util.RequireEnvs(openAiApiKeyKey, gptModelVersionKey, translationTimeoutKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create openai service: %w", err)
 	}
 
 	timeoutValue, err := strconv.ParseInt(envs[translationTimeoutKey], 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse translation timeout: %v", err)
+		return nil, fmt.Errorf("failed to parse translation timeout: %w", err)
 	}
 	if timeoutValue <= 0 {
 		return nil, fmt.Errorf("translation timeout must be greater than 0")

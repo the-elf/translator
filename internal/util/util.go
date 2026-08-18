@@ -1,17 +1,10 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
-
-func Ternary[T any](condition bool, ifTrue T, ifFalse T) T {
-	if condition {
-		return ifTrue
-	}
-
-	return ifFalse
-}
 
 func RequireEnv(key string) (string, error) {
 	val := os.Getenv(key)
@@ -22,20 +15,20 @@ func RequireEnv(key string) (string, error) {
 	return val, nil
 }
 
-func RequireEnvs(keys ...string) (map[string]string, map[string]error) {
-	result := make(map[string]string)
-	errs := make(map[string]error)
+func RequireEnvs(keys ...string) (map[string]string, error) {
+	result := make(map[string]string, len(keys))
+	var errs []error
 
 	for _, key := range keys {
 		val := os.Getenv(key)
 		if val == "" {
-			errs[key] = fmt.Errorf("required env variable %s is not set", key)
+			errs = append(errs, fmt.Errorf("required env variable %s is not set", key))
 		}
 		result[key] = val
 	}
 
 	if len(errs) > 0 {
-		return nil, errs
+		return nil, errors.Join(errs...)
 	}
 
 	return result, nil

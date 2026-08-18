@@ -69,7 +69,7 @@ func (t *TelegramHandler) Start() {
 func newTelegramBot() (*telebot.Bot, error) {
 	token, err := util.RequireEnv(telegramBotTokenKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create bot: %v", err)
+		return nil, fmt.Errorf("failed to create bot: %w", err)
 	}
 	settings := telebot.Settings{
 		Token:   token,
@@ -220,13 +220,8 @@ func (t *TelegramHandler) handleGeoTranslitButton(ctx telebot.Context) error {
 	case model.GeoTranslitButtonYes:
 		text, ok := t.getFromTranslitCache(chatID, ctx.Message().ID)
 		if !ok {
-			// todo добавить сообщение для пользователя в чате
-			return t.sendError(
-				ctx,
-				errors.New("cache miss"),
-				"translit cache lookup failed",
-				user.Language,
-			)
+			slog.Warn("translit cache miss", "chatID", chatID, "messageID", ctx.Message().ID)
+			return t.sendMessageTemplateText(ctx, model.TranslationErrorMsg, user.Language)
 		}
 
 		promptTemplate, err := t.mtSvc.GetByCodeAndLang(model.TranslationPromptText, user.Language)
@@ -362,7 +357,7 @@ func (t *TelegramHandler) sendError(ctx telebot.Context, err error, logMsg strin
 		template, tErr := t.mtSvc.GetByCodeAndLang(model.UnexpectedErrMsg, lang)
 		if tErr != nil {
 			_ = sendMessage(ctx, defaultUnexpectedErrMsg)
-			return fmt.Errorf("errors: [%w, %v]", err, tErr)
+			return fmt.Errorf("errors: [%w, %w]", err, tErr)
 		}
 		errMsg = template.Text
 	}
