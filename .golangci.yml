@@ -1,5 +1,9 @@
 version: "2"
 
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
 linters:
   enable:
     - errorlint
@@ -11,6 +15,12 @@ linters:
     - misspell
     - unconvert
     - prealloc
+  exclusions:
+    rules:
+      - linters:
+          - revive
+        text: "^(package-comments|exported):"
+
 
 formatters:
   enable:

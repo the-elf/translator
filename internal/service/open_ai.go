@@ -19,13 +19,13 @@ type OpenAiService struct {
 }
 
 const (
-	openAiApiKeyKey       = "OPENAI_API_KEY"
+	openAIAPIKeyKey       = "OPENAI_API_KEY" //nolint:gosec // TR-4
 	gptModelVersionKey    = "GPT_MODEL_VERSION"
 	translationTimeoutKey = "TRANSLATION_TIMEOUT_SECONDS"
 )
 
 func NewOpenAiService() (*OpenAiService, error) {
-	envs, err := util.RequireEnvs(openAiApiKeyKey, gptModelVersionKey, translationTimeoutKey)
+	envs, err := util.RequireEnvs(openAIAPIKeyKey, gptModelVersionKey, translationTimeoutKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create openai service: %w", err)
 	}

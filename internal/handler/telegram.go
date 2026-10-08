@@ -17,7 +17,7 @@ import (
 	"gopkg.in/telebot.v3"
 )
 
-const telegramBotTokenKey = "TELEGRAM_BOT_TOKEN"
+const telegramBotTokenKey = "TELEGRAM_BOT_TOKEN" //nolint:gosec // TR-4
 const editDelay = 300 * time.Millisecond
 const defaultUnexpectedErrMsg = "⚠️ Произошла неожиданная ошибка. Повторите попытку позже."
 
@@ -74,7 +74,7 @@ func newTelegramBot() (*telebot.Bot, error) {
 	settings := telebot.Settings{
 		Token:   token,
 		Poller:  &telebot.LongPoller{Timeout: 10 * time.Second},
-		OnError: func(err error, context telebot.Context) {},
+		OnError: func(_ error, _ telebot.Context) {},
 	}
 	return telebot.NewBot(settings)
 }
