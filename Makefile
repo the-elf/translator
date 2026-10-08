@@ -3,3 +3,6 @@ migrate-create:
 
 migrate-up:
 	migrate -path ./migrations -database "$(DATABASE_URL)" up
+
+lint:
+	golangci-lint run

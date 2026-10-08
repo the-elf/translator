@@ -1,0 +1,18 @@
+version: "2"
+
+linters:
+  enable:
+    - errorlint
+    - contextcheck
+    - noctx
+    - bodyclose
+    - gosec
+    - revive
+    - misspell
+    - unconvert
+    - prealloc
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
